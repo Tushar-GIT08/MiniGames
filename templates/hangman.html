@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hangman</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="hangman-page">
+
+    <a href="/games" class="home-button">
+        Back to Home Page
+    </a>
+
+    <h1>Hangman</h1>
+
+
+    <div class="hangman-container">
+
+        <div class="hangman-image">
+
+            {% if wrong_guesses == 0 %}
+                <img id="hangman-image"
+                     src="{{ url_for('static', filename='images/hangman0.svg') }}">
+
+            {% elif wrong_guesses == 1 %}
+                <img id="hangman-image"
+                     src="{{ url_for('static', filename='images/hangman1.svg') }}">
+
+            {% elif wrong_guesses == 2 %}
+                <img id="hangman-image"
+                     src="{{ url_for('static', filename='images/hangman2.svg') }}">
+
+            {% elif wrong_guesses == 3 %}
+                <img id="hangman-image"
+                     src="{{ url_for('static', filename='images/hangman3.svg') }}">
+
+            {% elif wrong_guesses == 4 %}
+                <img id="hangman-image"
+                     src="{{ url_for('static', filename='images/hangman4.svg') }}">
+
+            {% elif wrong_guesses == 5 %}
+                <img id="hangman-image"
+                     src="{{ url_for('static', filename='images/hangman5.svg') }}">
+            {% endif %}
+
+        </div>
+
+
+        <div class="word" id="word">
+            {{ hidden_word }}
+        </div>
+
+
+        <div id="message"></div>
+
+
+        <form id="guess-form">
+
+            <input type="text"
+                   id="guess"
+                   maxlength="1"
+                   autofocus>
+
+            <button type="submit">
+                GUESS
+            </button>
+
+        </form>
+
+
+        <button id="new-game">
+            NEW GAME
+        </button>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>

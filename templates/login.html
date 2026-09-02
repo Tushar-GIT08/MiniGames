@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="auth-page">
+
+    <h1>LOGIN</h1>
+
+    <form method="POST" class="auth-form">
+
+        <div class="form-group">
+            <label>Username or Email</label>
+            <input type="text" name="username" required>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <button type="submit">LOGIN</button>
+
+    </form>
+
+    {% if error %}
+        <script>
+            alert("{{ error }}");
+        </script>
+    {% endif %}
+
+    {% if error %}
+        <script>
+    alert("{{ error }}");
+        </script>
+    {% endif %}
+
+    <p class="switch-link">
+        Don't have an account?
+        <a href="/signup">signup</a>
+    </p>
+
+</body>
+
+</html>

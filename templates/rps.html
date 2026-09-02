@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <a href="/games">
+        <button>Back to home page</button>
+    </a>
+
+    <title>Rock Paper Scissors</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body class="rps-page">
+
+    <h1>Rock Paper Scissors</h1>    
+
+
+    <form action="/rps" method="POST">
+
+        <div class="choices">
+
+        <button type="submit" name="choice" value="rock">
+            <img src="{{ url_for('static', filename='images/rock-emoji.png') }}" >
+        </button>
+
+        <button type="submit" name="choice" value="paper">
+            <img src="{{ url_for('static', filename='images/paper-emoji.png') }}" >
+        </button>
+
+        <button type="submit" name="choice" value="scissors">
+            <img src="{{ url_for('static', filename='images/scissors-emoji.png') }}" >
+        </button>
+
+        </div> 
+
+    </form>
+
+    <div class="result-section">
+
+        <div class="player-choice">
+
+            <h2>You went with: </h2>
+
+            {% if choice == "" %}
+
+            {% elif choice == 'rock' %}
+                <img class="player_image" 
+                    src="{{ url_for('static', filename='images/rock-emoji.png') }}" >
+            
+            {% elif choice == 'paper' %}
+                <img class="player_image" 
+                    src="{{ url_for('static', filename='images/paper-emoji.png') }}" >
+            
+            {% else %}
+                <img class="player_image" 
+                    src="{{ url_for('static', filename='images/scissors-emoji.png') }}" >
+            
+            {% endif %}
+
+        </div>
+
+    
+    <div class="computer-choice">
+
+        <h2>Computer Chose: </h2>
+
+        {% if comp_choice == "" %}
+
+        {% elif comp_choice == 'rock' %}
+            <img class="comp_image" 
+                src="{{ url_for('static', filename='images/rock-emoji.png') }}" >
+        
+        {% elif comp_choice == 'paper' %}
+            <img class="comp_image"  
+                src="{{ url_for('static', filename='images/paper-emoji.png') }}" >
+        
+        {% else %}
+            <img class="comp_image" 
+                src="{{ url_for('static', filename='images/scissors-emoji.png') }}" >
+        
+        {% endif %}
+
+        </div>
+
+    </div>
+
+    <h2 class="result">{{ result }}</h2>
+
+
+</body>
+
+</html>

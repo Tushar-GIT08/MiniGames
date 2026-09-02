@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="ttt-page">
+
+    <a href="/games" class="ttt-home-button">
+        Back to Home Page
+    </a>
+
+
+        <h1>Tic Tac Toe</h1>
+
+            <div class="symbols">
+                <p>You = {{ game[1] }}</p>
+                <p>Computer = {{ game[2] }}</p>
+            </div>
+
+
+        <div class="board">
+
+        <button data-position="0">{{ game[0][0] }}</button>
+        <button data-position="1">{{ game[0][1] }}</button>
+        <button data-position="2">{{ game[0][2] }}</button>
+
+        <button data-position="3">{{ game[0][3] }}</button>
+        <button data-position="4">{{ game[0][4] }}</button>
+        <button data-position="5">{{ game[0][5] }}</button>
+
+        <button data-position="6">{{ game[0][6] }}</button>
+        <button data-position="7">{{ game[0][7] }}</button>
+        <button data-position="8">{{ game[0][8] }}</button>
+
+
+    </div>
+
+
+    <button id="results">LIFETIME RESULTS</button>
+
+        <div id="results-popup">
+
+            <div class="results-box">
+
+                <h2>LIFETIME RESULTS</h2>
+
+                <p class="username">{{username}}</p>
+
+                <p> Wins: {{record[0]}}</p>
+                <p> Losses: {{record[1]}}</p>
+                <p> Draws: {{record[2]}}</p>
+
+                <button id="btg">Back-to-Game</button>
+
+            </div>
+
+        </div>
+
+    <p id="message"></p>
+
+    <button id="new-game">NEW GAME</button>
+
+    <script src="{{ url_for('static', filename='js/tictactoe.js') }}"></script>
+
+</body>
+</html>
+

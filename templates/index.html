@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MINI GAMES</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="home-page">
+
+    <div class="user-section">
+
+        <a href="/logout">
+            <button>LOGOUT</button>
+        </a>
+
+    </div>
+
+    <h1>OUR GAMES</h1>
+
+    <div class="games-container">
+
+        <a href="/rps" class="game-card">
+
+            <img src="{{ url_for('static', filename='images/logo.png') }}">
+
+            <p>Click to play Rock Paper Scissors</p>
+
+        </a>
+
+
+        <a href="/hangman" class="game-card">
+
+            <img src="{{ url_for('static', filename='images/hangman-logo.png') }}">
+
+            <p>Click to play Hangman</p>
+
+        </a>
+
+                <a href="/tictactoe" class="game-card">
+
+            <img src="{{ url_for('static', filename='images/tictactoe-logo.png') }}">
+
+            <p>Click to play Tic-Tac-Toe</p>
+
+        </a>
+
+    </div>
+
+    <div class="welcome-user">
+    <p>Welcome, {{ session["username"] }}</p>
+    </div>
+
+</body>
+
+</html>
