@@ -3,10 +3,6 @@
 
 <head>
 
-    <a href="/games">
-        <button>Back to home page</button>
-    </a>
-
     <title>Rock Paper Scissors</title>
 
     <link rel="stylesheet"
@@ -16,80 +12,78 @@
 
 <body class="rps-page">
 
-    <h1>Rock Paper Scissors</h1>    
+    <a href="/games">
+        <button>Back to home page</button>
+    </a>
 
+    <h1>Rock Paper Scissors</h1>
 
-    <form action="/rps" method="POST">
+    <div class="choices">
 
-        <div class="choices">
-
-        <button type="submit" name="choice" value="rock">
-            <img src="{{ url_for('static', filename='images/rock-emoji.png') }}" >
+        <button class="rps-choice" data-choice="rock">
+            <img src="{{ url_for('static', filename='images/rock-emoji.png') }}">
         </button>
 
-        <button type="submit" name="choice" value="paper">
-            <img src="{{ url_for('static', filename='images/paper-emoji.png') }}" >
+        <button class="rps-choice" data-choice="paper">
+            <img src="{{ url_for('static', filename='images/paper-emoji.png') }}">
         </button>
 
-        <button type="submit" name="choice" value="scissors">
-            <img src="{{ url_for('static', filename='images/scissors-emoji.png') }}" >
+        <button class="rps-choice" data-choice="scissors">
+            <img src="{{ url_for('static', filename='images/scissors-emoji.png') }}">
         </button>
 
-        </div> 
+    </div>
 
-    </form>
 
     <div class="result-section">
 
         <div class="player-choice">
 
-            <h2>You went with: </h2>
+            <h2>You went with:</h2>
 
-            {% if choice == "" %}
-
-            {% elif choice == 'rock' %}
-                <img class="player_image" 
-                    src="{{ url_for('static', filename='images/rock-emoji.png') }}" >
-            
-            {% elif choice == 'paper' %}
-                <img class="player_image" 
-                    src="{{ url_for('static', filename='images/paper-emoji.png') }}" >
-            
-            {% else %}
-                <img class="player_image" 
-                    src="{{ url_for('static', filename='images/scissors-emoji.png') }}" >
-            
-            {% endif %}
+            <img id="player-image"
+                 class="player_image"
+                 src="">
 
         </div>
 
-    
-    <div class="computer-choice">
+        <h2 id="result"></h2>
 
-        <h2>Computer Chose: </h2>
+        <div class="computer-choice">
 
-        {% if comp_choice == "" %}
+            <h2>Computer chose:</h2>
 
-        {% elif comp_choice == 'rock' %}
-            <img class="comp_image" 
-                src="{{ url_for('static', filename='images/rock-emoji.png') }}" >
-        
-        {% elif comp_choice == 'paper' %}
-            <img class="comp_image"  
-                src="{{ url_for('static', filename='images/paper-emoji.png') }}" >
-        
-        {% else %}
-            <img class="comp_image" 
-                src="{{ url_for('static', filename='images/scissors-emoji.png') }}" >
-        
-        {% endif %}
+            <img id="comp-image"
+                 class="comp_image"
+                 src="">
 
         </div>
 
     </div>
 
-    <h2 class="result">{{ result }}</h2>
 
+    <button id="results">LIFETIME RESULTS</button>
+
+    <div id="results-popup">
+
+        <div class="results-box">
+
+            <h2>LIFETIME RESULTS</h2>
+
+                <p class="username">{{username}}</p>
+
+                <p> Wins: {{record[0]}}</p>
+                <p> Losses: {{record[1]}}</p>
+                <p> Draws: {{record[2]}}</p>
+
+                <button id="btg">Back-to-Game</button>
+
+        </div>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='js/rps.js') }}"></script>
 
 </body>
 

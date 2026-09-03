@@ -10,19 +10,12 @@ tttButtons.forEach(function(button) {
 
         console.log("Clicked position:", position);
 
-        fetch("/tictactoe", {
+        fetch("/tictactoe", {method: "POST", headers: {"Content-Type": "application/json"},
 
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                position: position
-            })
+            body: JSON.stringify({position: position})
 
         })
+        
         .then(response => {
 
             console.log("Response status:", response.status);
