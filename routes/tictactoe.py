@@ -48,9 +48,6 @@ def tictactoe_game():
 
     username = get_username(user_id)
 
-    print("USER ID:", user_id)
-    print("USERNAME:", username)
-
     record = get_game_record(user_id, "tictactoe")
 
     if record is None:

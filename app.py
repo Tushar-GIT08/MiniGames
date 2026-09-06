@@ -8,6 +8,7 @@ from routes.games import games
 from routes.rps import rps
 from routes.hangman import hangman
 from routes.tictactoe import tictactoe
+from routes.memory import memory
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ app.register_blueprint(games)
 app.register_blueprint(rps)
 app.register_blueprint(hangman)
 app.register_blueprint(tictactoe)
+app.register_blueprint(memory)
 
 
 if __name__ == "__main__":
