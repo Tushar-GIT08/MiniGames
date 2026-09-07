@@ -40,6 +40,16 @@ def init_db():
         FOREIGN KEY(user_id) REFERENCES users(id))
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS memory_game(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        moves INTEGER NOT NULL,
+        time TEXT NOT NULL,
+        result TEXT NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES users(id))
+    """)
+
     conn.commit()
     conn.close()
 
@@ -212,5 +222,18 @@ def get_username(user_id):
     conn.close()
 
     return username[0]
+
+def insert_memory(user_id, moves, time, result):    
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO memory_game (user_id, moves, time, result) VALUES (?, ?, ?, ?)
+    """,
+    (user_id, moves, time, result)
+    )
+
+    conn.commit()
+    conn.close()
     
 
