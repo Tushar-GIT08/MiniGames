@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, session, redirect , request , json
 import random
 
 from database.db import(
-    get_username
-
+    get_username,
+    insert_memory
 
 )
 
@@ -22,11 +22,25 @@ def memory_game():
 
     username = get_username(user_id)
 
+    if request.method == "POST":
+        data = request.get_json()
+
+        moves = data["moves"]
+        time = data["time"]
+        result = data["result"]
+
+        insert_memory(user_id, moves, time, result)
+
+    return render_template("memory.html",username=username)
+
+@memory.route("/memory/reset")
+def reset_memory():
+
+    if "user_id" not in session:
+        return redirect("/login")
+    
+    return redirect("/memory")
 
 
 
-    return render_template(
-            "memory.html",
-            username=username
-        )
 
