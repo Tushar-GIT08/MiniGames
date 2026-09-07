@@ -100,19 +100,11 @@ def tictactoe_game():
 
             if check_winner(board, game[1]):
 
-                update_ttt_game(
-                    user_id,
-                    board,
-                    "player",
-                    1
-                )
+                update_ttt_game(user_id,board,"player",1)
 
                 update_record(user_id, "tictactoe", "win")
 
-                return jsonify({
-                    "board": board,
-                    "winner": "player"
-                })
+                return jsonify({"board": board,"winner": "player"})
 
             empty_positions = []
 
