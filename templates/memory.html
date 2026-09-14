@@ -32,7 +32,47 @@
 
     <p id="result"></p>
 
+    {% if small is not none %}
+        <p>Best Moves: {{small}}</p>
+    {% else %}
+        <p>No games played yet</p>
+    {% endif %}
+
     <button id="reset">RESET</button>
+
+    <button id="prev">Previous games</button>
+
+        <div id="prev_popup">
+
+            <div id="prev_box">
+
+                <h2>Previous Games:</h2>
+
+                <table>
+                    
+                    <tr>
+                        <th>Game</th>
+                        <th>Moves</th>
+                        <th>Time</th>
+                        <th>Result</th>
+                    </tr>
+                
+                    {% for i in records %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ i[0] }}</td> 
+                        <td>{{ i[1] }}</td> 
+                        <td>{{ i[2] }}</td>
+                    </tr>
+                    {% endfor %}
+                
+                </table>
+
+                <button id="btg">Back-to-Game</button>
+            
+            </div>
+        
+        </div>
 
     
 

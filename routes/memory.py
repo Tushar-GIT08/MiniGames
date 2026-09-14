@@ -3,11 +3,10 @@ import random
 
 from database.db import(
     get_username,
-    insert_memory
+    insert_memory,
+    get_memory_games
 
 )
-
-
 
 memory = Blueprint("memory", __name__)
 
@@ -31,7 +30,20 @@ def memory_game():
 
         insert_memory(user_id, moves, time, result)
 
-    return render_template("memory.html",username=username)
+    records = get_memory_games(user_id)
+
+    print(records)
+
+    if records:
+        small = records[0][0]
+
+        for i in records:
+            if i[0] < small:
+                small = i[0]
+    else:
+        small = None
+
+    return render_template("memory.html",username=username, records=records, small=small)
 
 @memory.route("/memory/reset")
 def reset_memory():

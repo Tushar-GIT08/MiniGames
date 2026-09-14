@@ -1,4 +1,9 @@
-const tiles = ["A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H"]; 
+const tiles = [
+    "🤓", "💩", "🥸", "🥵",
+    "😂", "😭", "😈", "🤬",
+    "🤓", "💩", "🥸", "🥵",
+    "😂", "😭", "😈", "🤬"
+]; 
 
 let card1 = null;
 let card2 = null;
@@ -134,5 +139,21 @@ const reset = document.getElementById("reset");
 reset.addEventListener("click", function() {
 
     window.location.href = "/memory/reset";
+
+});
+
+const prev_button = document.getElementById("prev");
+const prev_popup = document.getElementById("prev_popup");
+const btg = document.getElementById("btg")
+
+prev_button.addEventListener("click", function() {
+
+    prev_popup.style.display = "flex";
+
+});
+
+btg.addEventListener("click", function() {
+
+    prev_popup.style.display = "none";
 
 });
