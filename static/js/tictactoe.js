@@ -1,31 +1,22 @@
 const tttButtons = document.querySelectorAll(".board button");
 
-console.log("Number of buttons:", tttButtons.length);
-
 tttButtons.forEach(function(button) {
 
     button.addEventListener("click", function() {
 
         const position = button.dataset.position;
 
-        console.log("Clicked position:", position);
-
-        fetch("/tictactoe", {method: "POST", headers: {"Content-Type": "application/json"},
+        fetch("/tictactoe/1p", {method: "POST", headers: {"Content-Type": "application/json"},
 
             body: JSON.stringify({position: position})
 
         })
-        
         .then(response => {
-
-            console.log("Response status:", response.status);
 
             return response.json();
 
         })
         .then(data => {
-
-            console.log("Data from Flask:", data);
 
             const board = data.board;
 

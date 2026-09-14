@@ -37,8 +37,15 @@ def check_winner(board , symbol):
        
     return False
 
+@tictactoe.route("/tictactoe")
+def tictactoe_mode():
+    if "user_id" not in session:
+        return redirect("/login")
 
-@tictactoe.route("/tictactoe" , methods=["GET" , "POST"])
+    return render_template("tictactoe.html", mode="selection")
+
+
+@tictactoe.route("/tictactoe/1p" , methods=["GET" , "POST"])
 def tictactoe_game():
 
     if "user_id" not in session:
@@ -77,9 +84,7 @@ def tictactoe_game():
 
             computer_position = random.choice(range(9))
 
-            board = (
-                board[:computer_position] + computer_symbol + board[computer_position + 1:]
-            )
+            board = (board[:computer_position] + computer_symbol + board[computer_position + 1:])
 
             update_ttt_game(user_id,board,"player",0)
 
@@ -119,31 +124,18 @@ def tictactoe_game():
 
                 if check_winner(board, game[2]):
 
-                    update_ttt_game(
-                        user_id,
-                        board,
-                        "player",
-                        1
-                    )
+                    update_ttt_game(user_id,board,"player",1)
 
                     update_record(user_id, "tictactoe", "loss")
 
-
-                    return jsonify({
-                        "board": board,
-                        "winner": "computer"
-                    })
-
+                    return jsonify({"board": board,"winner": "computer"})
 
                 if "_" not in board:
                     update_ttt_game(user_id, board, "player", 1)
 
                     update_record(user_id, "tictactoe", "draw")
 
-                    return jsonify({
-                        "board" : board,
-                        "winner" : "draw"
-                    })
+                    return jsonify({"board" : board,"winner" : "draw"})
 
             update_ttt_game(user_id,board,"player",0)
 
@@ -151,12 +143,22 @@ def tictactoe_game():
 
         return jsonify({"board" : board})
 
-    return render_template(
-        "tictactoe.html",
-        game=game,
-        record=record,
-        username=username
-    )
+    return render_template("tictactoe.html",game=game,record=record,username=username,mode="1p")
+
+@tictactoe.route("/tictactoe/results")
+def tictactoe_results():
+
+    if "user_id" not in session:
+        return jsonify({"error": "not logged in"}), 401
+
+    user_id = session["user_id"]
+
+    record = get_game_record(user_id, "tictactoe")
+    username = get_username(user_id)
+
+    return jsonify({"username": username,"wins": record[0],"losses": record[1],"draws": record[2]})
+
+
 
 @tictactoe.route("/tictactoe/reset")
 def reset_tictactoe():
@@ -168,5 +170,5 @@ def reset_tictactoe():
 
     delete_ttt_game(user_id)
 
-    return redirect("/tictactoe")
+    return redirect("/tictactoe/1p")
 

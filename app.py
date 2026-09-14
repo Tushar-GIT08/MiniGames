@@ -1,5 +1,7 @@
 from flask import Flask, request, render_template, session, redirect, jsonify
-import os
+
+import os, random, string
+
 from dotenv import load_dotenv
 
 from database.db import init_db, find_user, create_user
@@ -9,10 +11,14 @@ from routes.rps import rps
 from routes.hangman import hangman
 from routes.tictactoe import tictactoe
 from routes.memory import memory
+from routes.ttt_multiplayer import ttt_multiplayer
+
+from sockets.ttt_socket import socketio
 
 load_dotenv()
 
 app = Flask(__name__)
+socketio.init_app(app)
 
 app.secret_key = os.environ.get("SECRET_KEY")
 
@@ -22,9 +28,10 @@ app.register_blueprint(rps)
 app.register_blueprint(hangman)
 app.register_blueprint(tictactoe)
 app.register_blueprint(memory)
+app.register_blueprint(ttt_multiplayer)
 
 
 if __name__ == "__main__":
 
     init_db()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, debug=True, use_reloader=False)
