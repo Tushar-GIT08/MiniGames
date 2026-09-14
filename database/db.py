@@ -235,5 +235,24 @@ def insert_memory(user_id, moves, time, result):
 
     conn.commit()
     conn.close()
+
+def get_memory_games(user_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT moves, time, result FROM memory_game
+        WHERE user_id = ?
+    """,
+    (user_id,)
+    )
+
+    memo = cursor.fetchall()
+
+    conn.close()
+
+    return memo
+
+
     
 
