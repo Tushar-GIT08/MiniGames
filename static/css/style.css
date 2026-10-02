@@ -108,6 +108,9 @@ button {
     margin: 15px 0 0 25px;
 }
 
+#rps-game {
+    display: none;
+}
 
 /* Hangman */
 .hangman-page {
@@ -400,29 +403,45 @@ button {
 /* Tic Tac Toe */
 .ttt-page {
     text-align: center;
+    background-color: #f2f0eb;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222;
+    min-height: 100vh;
+    color-scheme: light;
 }
 
-.board form{
+.ttt-page h1 {
+    margin-top: 60px;
+    margin-bottom: 80px;
+    font-size: 36px;
+    letter-spacing: 2px;
+}
+
+.board form {
     margin: 0px;
 }
 
 .board button {
-    width: 80px;
-    height: 80px;
-    font-size: 30px;
+    width: 90px;
+    height: 90px;
+    font-size: 36px;
+    font-weight: bold;
     cursor: pointer;
     background-color: white;
-    border: 1px solid #333;
+    border: 2px solid #333;
+    color: #222;
 }
 
 .symbols {
     text-align: center;
-    margin-bottom: 20px;
+    margin-top: 25px;
+    margin-bottom: 25px;
 }
 
 .symbols p {
     margin: 5px;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 #results-popup,
@@ -449,30 +468,44 @@ button {
 .results-box,
 .rematch-box {
     background-color: white;
-    padding: 30px 50px;
+    padding: 35px 55px;
     border-radius: 10px;
     text-align: center;
+    border: 2px solid #333;
 }
 
 .results-box h2 {
     margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 24px;
 }
 
 .results-box p {
-    margin: 8px 0;
+    margin: 10px 0;
+    font-size: 17px;
+}
+
+.results-box .username {
+    font-weight: bold;
+    font-size: 19px;
+    margin-bottom: 15px;
 }
 
 #results {
     display: block;
     margin: 30px auto;
-    padding: 10px 20px;
+    padding: 14px 28px;
+    font-size: 16px;
     cursor: pointer;
+    width: 220px;
 }
 
 #btg {
     margin-top: 20px;
-    padding: 8px 18px;
+    padding: 12px 24px;
+    font-size: 15px;
     cursor: pointer;
+    width: 180px;
 }
 
 .ttt-home-button {
@@ -480,9 +513,9 @@ button {
     top: 20px;
     left: 25px;
 
-    padding: 8px 14px;
+    padding: 10px 16px;
 
-    border: 1px solid #333;
+    border: 2px solid #333;
     border-radius: 6px;
 
     background-color: white;
@@ -490,6 +523,7 @@ button {
 
     text-decoration: none;
     font-size: 14px;
+    font-weight: bold;
 }
 
 .ttt-home-button:hover {
@@ -499,70 +533,106 @@ button {
 
 #room-menu {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 90px;
 }
 
 #room-menu h2 {
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    font-size: 26px;
 }
 
 .room-buttons {
     display: flex;
-    justify-content: center;
-    gap: 15px;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
 }
 
 .room-buttons button {
-    padding: 14px 28px;
-    font-size: 16px;
+    padding: 16px 32px;
+    font-size: 17px;
     cursor: pointer;
+    width: 200px;
+    border: 2px solid #333;
+    background-color: white;
+    border-radius: 6px;
 }
 
 #join-section {
     display: none;
-    margin-top: 20px;
+    margin-top: 50px;
 }
 
 #room-code {
     display: block;
-    width: 180px;
-    padding: 10px;
-    margin: 0 auto 12px;
+    width: 220px;
+    padding: 14px;
+    margin: 0 auto 25px;
     text-align: center;
     box-sizing: border-box;
+    font-size: 18px;
+    letter-spacing: 3px;
+    border: 2px solid #333;
+    border-radius: 6px;
 }
 
 #join {
-    padding: 10px 24px;
-    font-size: 15px;
+    padding: 12px 26px;
+    font-size: 16px;
     cursor: pointer;
+    width: 220px;
+    border: 2px solid #333;
+    background-color: white;
+    border-radius: 6px;
 }
 
 #room-message {
     margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 #waiting {
     display: none;
-    margin-top: 50px;
+    margin-top: 120px;
 }
 
-    .board {
-        display: none;
-        grid-template-columns: repeat(3, 80px);
-        grid-template-rows: repeat(3, 80px);
-        gap: 5px;
-        justify-content: center;
-        margin-top: 30px;
-    }
+#waiting-room-code {
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 35px;
+}
 
-    .one-player-board {
-        display: grid;
-    }
+#waiting p:last-child {
+    font-size: 18px;
+}
+
+.board {
+    display: none;
+    grid-template-columns: repeat(3, 90px);
+    grid-template-rows: repeat(3, 90px);
+    gap: 6px;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.one-player-board {
+    display: grid;
+}
 
 #game-info {
     display: none;
     text-align: center;
+    margin-bottom: 15px;
+    margin-top: 60px;
+}
+
+#game-info p {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px;
 }
 
 .results-box .result {
@@ -591,35 +661,100 @@ button {
     z-index: 1000;
 }
 
+.rematch-box h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.rematch-box p {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
 #accept-rematch,
 #decline-rematch {
-    padding: 12px 28px;
+    padding: 14px 30px;
     font-size: 16px;
     cursor: pointer;
     margin: 8px;
+    border: 2px solid #333;
+    background-color: white;
+    border-radius: 6px;
+    width: 140px;
 }
 
 .one-player-controls {
     display: block;
-    margin-top: 20px;
+    margin-top: 50px;
 }
 
 .one-player-controls #new-game,
 .one-player-controls #results {
     display: block;
-    margin: 10px auto;
+    margin: 12px auto;
+    width: 220px;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid #333;
+    background-color: white;
+    border-radius: 6px;
+}
+
+.ttt-page > a {
+    display: block;
+}
+
+.ttt-page > a:first-of-type {
+    margin-top: 60px;
 }
 
 .ttt-page > a button {
-    padding: 18px 35px;
-    font-size: 18px;
-    margin: 10px;
+    padding: 20px 40px;
+    font-size: 19px;
+    margin: 35px auto;
     cursor: pointer;
+    width: 260px;
+    display: block;
+    border: 2px solid #333;
+    background-color: white;
+    border-radius: 6px;
+    font-weight: bold;
 }
 
 #game-controls {
     display: none;
     text-align: center;
+    margin-top: 65px;
+}
+
+#message {
+    font-size: 18px;
+    font-weight: bold;
+    min-height: 26px;
+    margin: 15px 0;
+}
+
+#new-game {
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 220px;
+    border: 2px solid #333;
+    background-color: white;
+    border-radius: 6px;
+    display: block;
+    margin: 12px auto;
+    color: #222;
+}
+
+#new-game:hover,
+#new-game:focus,
+#new-game:active {
+    background-color: white;
+    color: #222;
+    border: 2px solid #333;
 }
 
 

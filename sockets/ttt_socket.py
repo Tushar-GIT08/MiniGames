@@ -2,12 +2,36 @@ from flask import session, request
 from flask_socketio import join_room, emit, SocketIO
 import random
 import string
+import time
 
 from database.db import update_record
 
 socketio = SocketIO()
 
+REJOIN_GRACE_SECONDS = 120
+ROOM_TTL_SECONDS = 1800
+
 game_states = {}
+
+def cleanup_rooms():
+ 
+    current_time = time.time()
+
+    rooms_delete = []
+
+    for room in game_states:
+        last_activity = game_states[room]["last_activity_at"]
+
+        if current_time - last_activity > ROOM_TTL_SECONDS:
+            rooms_delete.append(room)
+
+    for room in rooms_delete:
+        del game_states[room]
+
+def cleanup_loop():
+    while True:
+        socketio.sleep(30)
+        cleanup_rooms()
 
 def generate_room_code():
 
@@ -43,7 +67,7 @@ def check_winner(board, symbol):
 
     return False
 
-@socketio.on("join_game")
+@socketio.on("ttt_join_game")
 def handle_join_game(data):
 
     room = data["room"]
@@ -52,11 +76,48 @@ def handle_join_game(data):
         emit("room_not_found",{"message":"room does not exist"})
         return
 
+    user_id = session["user_id"]
+
+    for player in game_states[room]["players"]:
+        if player["user_id"] == user_id:
+
+            if player["connected"] == False:
+
+                if time.time() - player.get("disconnected_at", 0) > REJOIN_GRACE_SECONDS:
+                    emit("rejoin_expired", {"message": "Too much time passed, room is no longer joinable"})
+                    return
+
+                player["sid"] = request.sid
+                player["connected"] = True
+                player["disconnected_at"] = None
+
+                join_room(room)
+
+                game_states[room]["last_activity_at"] = time.time()
+
+                emit("player_reconnected", {"message": "You reconnected","symbol": player["symbol"]})
+
+                emit("game_state", {"board": game_states[room]["board"],
+                                    "turn": game_states[room]["turn"],
+                                    "game_started": game_states[room]["game_started"],
+                                    "game_over": game_states[room]["game_over"],
+                                    "symbol": player["symbol"]})
+
+                emit("opponent_reconnected", {"message": "Opponent reconnected"}, to=room, include_self=False)
+
+                return
+
+            return 
+
     if len(game_states[room]["players"]) >= 2:
-        emit("room_full", {"message":"room is full"})
+
+        emit("room_full", {"message": "room is full"})
         return
 
     join_room(room)
+
+    game_states[room]["last_activity_at"] = time.time()
+
 
     first_player_symbol = game_states[room]["players"][0]["symbol"]
 
@@ -65,7 +126,8 @@ def handle_join_game(data):
     else:
         symbol = "X"
 
-    player = {"sid": request.sid , "symbol": symbol, "user_id":session["user_id"]}
+    player = {"sid": request.sid , "symbol": symbol, "user_id":session["user_id"],
+               "connected": True, "disconnected_at": None}
 
     game_states[room]["players"].append(player)
 
@@ -76,7 +138,7 @@ def handle_join_game(data):
 
         emit("game_started", {"message": "Game started", "turn": "X"}, to=room)
 
-@socketio.on("create_room")
+@socketio.on("ttt_create_room")
 def handle_create_room():
 
     while True:
@@ -87,23 +149,31 @@ def handle_create_room():
             break
 
     game_states[room] = {"board": "_________","players": [],"turn": "X","game_started": False,
-                        "game_over": False,"rematch_request": None}
+                        "game_over": False,"rematch_request": None, "created_at": time.time(), 
+                        "last_activity_at": time.time(),
+                        "host_user_id": session["user_id"],
+                        }
 
     join_room(room)
 
     symbol = random.choice(["X", "O"])
 
-    game_states[room]["players"].append({"sid": request.sid,"symbol": symbol,"user_id": session["user_id"]})
+    game_states[room]["players"].append({"sid": request.sid,"symbol": symbol,
+                                         "user_id": session["user_id"],"connected": True,
+                                         "disconnected_at": None})
 
     emit("room_created", {"room": room,"symbol": symbol})
 
-@socketio.on("make_move")
+@socketio.on("ttt_make_move")
 def handle_make_move(data):
 
     room = data["room"]
+
     position = data["position"]
 
     current_room = game_states[room]
+
+    current_room["last_activity_at"] = time.time()
 
     if not current_room["game_started"]:
         return
@@ -171,7 +241,7 @@ def handle_make_move(data):
 
     emit("board_update", {"board": board , "turn": current_room["turn"]}, to=room)
 
-@socketio.on("request_rematch")
+@socketio.on("ttt_request_rematch")
 def handle_request_rematch(data):
 
     room = data["room"]
@@ -185,7 +255,7 @@ def handle_request_rematch(data):
 
     emit("rematch_requested", {"message": "Player wants to start a new game"}, to=room, include_self=False)
 
-@socketio.on("rematch_response")
+@socketio.on("ttt_rematch_response")
 def handle_rematch_response(data):
 
     room = data["room"]
@@ -229,7 +299,7 @@ def handle_rematch_response(data):
 
         return
 
-@socketio.on("disconnect")
+@socketio.on("ttt_disconnect")
 def handle_disconnect():
 
     for room in game_states:
@@ -238,7 +308,11 @@ def handle_disconnect():
         for player in current_room["players"]:
 
             if player["sid"] == request.sid:
-                current_room["players"].remove(player)
+
+                player["sid"] = None
+                player["connected"] = False
+                player["disconnected_at"] = time.time()
 
                 emit("opponent_disconnected",{"message": "Opponent disconnected"},to=room)
                 break
+

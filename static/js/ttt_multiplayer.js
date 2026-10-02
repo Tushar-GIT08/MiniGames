@@ -11,9 +11,21 @@ const waiting = document.getElementById("waiting");
 const board = document.querySelector(".board");
 const roomMenu = document.getElementById("room-menu");
 
+const rejoin = document.getElementById("rejoin");
+const rejoinButton = document.getElementById("rejoin-game");
+const previousRoom = document.getElementById("previous-room");
+
 
 let mySymbol = null;
 let room = null;
+const savedRoom = localStorage.getItem("tttRoom");
+
+if (savedRoom) {
+
+    rejoin.style.display = "block";
+
+    previousRoom.textContent = "Previous Room: " + savedRoom;
+}
 
 const tttButtons = document.querySelectorAll(".board button");
 
@@ -40,11 +52,24 @@ showJoinButton.addEventListener("click", function() {
 joinButton.addEventListener("click", function() {
     
     room = roomCode.value;
+
+    localStorage.setItem("tttRoom", room)
+
     socket.emit("join_game", {room: room});
+});
+
+rejoinButton.addEventListener("click", function() {
+
+    room = savedRoom;
+
+    socket.emit("join_game", { room: room});
 });
 
 socket.on("room_created", function(data) {
     room = data.room;
+
+    localStorage.setItem("tttRoom", room)
+
     mySymbol = data.symbol;
 
     document.getElementById("waiting-room-code").textContent = "Room Code: " + room;
@@ -103,6 +128,34 @@ socket.on("board_update", function(data) {
     for (let i = 0; i < 9; i++) {
         tttButtons[i].textContent = data.board[i];
     }
+});
+
+socket.on("game_state", function(data) {
+
+    rejoin.style.display = "none";
+
+    mySymbol = data.symbol;
+
+    document.getElementById("my-symbol").textContent = "You = " + mySymbol;
+
+    if (mySymbol === "X") {
+        document.getElementById("opponent-symbol").textContent = "Opponent = O";
+    }
+    else {
+        document.getElementById("opponent-symbol").textContent = "Opponent = X";
+    }
+
+    for (let i = 0; i < 9; i++) {
+        tttButtons[i].textContent = data.board[i];
+    }
+
+    waiting.style.display = "none";
+    document.getElementById("game-info").style.display = "block";
+    board.style.display = "grid";
+    document.getElementById("game-controls").style.display = "block";
+    document.getElementById("results").style.display = "block";
+    document.getElementById("new-game").style.display = "block";
+
 });
 
 socket.on("game_over", function(data) {
@@ -184,8 +237,23 @@ socket.on("opponent_disconnected", function(data) {
 
     for (let i = 0; i < 9; i++) {
         tttButtons[i].disabled = true;
-}
+    }
+});
 
+socket.on("opponent_reconnected", function(data) {
+
+    document.getElementById("message").textContent = "OPPONENT RECONNECTED";
+
+    for (let i = 0; i < 9; i++) {
+        tttButtons[i].disabled = false;
+    }
+
+});
+
+socket.on("rejoin_expired", function(data) {
+    roomMessage.textContent = data.message;
+    localStorage.removeItem("tttRoom");
+    rejoin.style.display = "none";
 });
 
 const resultsButton = document.getElementById("results");

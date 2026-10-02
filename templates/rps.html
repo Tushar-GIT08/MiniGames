@@ -16,6 +16,20 @@
         <button>Back to home page</button>
     </a>
 
+{% if mode == "selection" %}
+
+    <h1>Rock Paper Scissors</h1>
+
+    <a href="/rps/1p">
+        <button>1P VS COMPUTER</button>
+    </a>
+
+    <a href="/rps/2p">
+        <button>2P WITH A FRIEND</button>
+    </a>
+
+{% elif mode == "1p" %}
+
     <h1>Rock Paper Scissors</h1>
 
     <div class="choices">
@@ -84,6 +98,69 @@
 
 
     <script src="{{ url_for('static', filename='js/rps.js') }}"></script>
+
+{% elif mode == "2p" %}
+
+    <h1>Rock Paper Scissors</h1>
+
+    <div id="room-menu">
+
+        <h2>PLAY MULTIPLAYER</h2>
+
+        <div class="room-buttons">
+            <button id="create-room">CREATE ROOM</button>
+            <button id="show-join-room">JOIN ROOM</button>
+        </div>
+
+        <div id="join-section">
+
+            <input type="text" id="room-code" placeholder="Enter room code" maxlength="4">
+
+            <button id="join">SUBMIT CODE</button>
+
+        </div>
+
+        <p id="room-message"></p>
+
+    </div>
+
+
+    <div id="waiting">
+
+        <p id="waiting-room-code"></p>
+
+        <p>Waiting for opponent...</p>
+
+    </div> 
+
+    <div id="rps-game">
+
+    <h2>MAKE YOUR CHOICE</h2>
+
+    <div class="choices">
+
+        <button class="rps-choice" data-choice="rock">
+            <img src="{{ url_for('static', filename='images/rock-emoji.png') }}">
+        </button>
+
+        <button class="rps-choice" data-choice="paper">
+            <img src="{{ url_for('static', filename='images/paper-emoji.png') }}">
+        </button>
+
+        <button class="rps-choice" data-choice="scissors">
+            <img src="{{ url_for('static', filename='images/scissors-emoji.png') }}">
+        </button>
+
+    </div>
+
+    <p id="rps-result"></p>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/rps_multiplayer.js') }}"></script>
+
+{% endif %}
+
 
 </body>
 

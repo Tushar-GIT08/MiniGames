@@ -13,7 +13,7 @@ buttons.forEach(function(button){
 
         const choice = button.dataset.choice;
 
-            fetch("/rps", {method: "POST",headers: {"Content-Type": "application/json"},
+            fetch("/rps/1p", {method: "POST",headers: {"Content-Type": "application/json"},
             
             body: JSON.stringify({choice: choice})
         

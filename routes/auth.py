@@ -54,7 +54,7 @@ def login():
             session["user_id"] = user[0]
             session["username"] = user[1]
 
-            return redirect("/games")
+            return redirect("/mode")
 
         else:
             return render_template("login.html", error="Incorrect password")

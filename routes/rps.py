@@ -5,7 +5,14 @@ from database.db import get_game_record, create_record, update_record, get_usern
 
 rps = Blueprint("rps", __name__)
 
-@rps.route("/rps", methods=["GET", "POST"])
+@rps.route("/rps")
+def rps_mode():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    return render_template("rps.html", mode="selection")
+
+@rps.route("/rps/1p", methods=["GET", "POST"])
 def play_rps():
 
     if "user_id" not in session:
@@ -38,8 +45,8 @@ def play_rps():
             or
             (choice == "paper" and comp_choice == "rock")
             or
-            (choice == "scissors" and comp_choice == "paper")
-        ):
+            (choice == "scissors" and comp_choice == "paper")):
+
             result = "YOU WON!!"
             db_result = "win"
 
@@ -53,16 +60,9 @@ def play_rps():
 
         record = get_game_record(user_id, "rps")
 
-        return jsonify({
-            "choice":choice,
-            "comp_choice":comp_choice,
-            "result":result,
-            "wins": record[0],
-            "losses": record[1],
-            "draws": record[2]
-        })
+        return jsonify({"choice":choice,"comp_choice":comp_choice,"result":result,
+                        "wins": record[0],"losses": record[1],"draws": record[2]})
 
     username = get_username(user_id)
 
-
-    return render_template("rps.html",record=record)
+    return render_template("rps.html",record=record, username=username, mode="1p")

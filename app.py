@@ -11,9 +11,12 @@ from routes.rps import rps
 from routes.hangman import hangman
 from routes.tictactoe import tictactoe
 from routes.memory import memory
+
+from routes.rps_multiplayer import rps_multiplayer
 from routes.ttt_multiplayer import ttt_multiplayer
 
-from sockets.ttt_socket import socketio
+from sockets import rps_socket
+from sockets.ttt_socket import socketio, cleanup_loop
 
 load_dotenv()
 
@@ -28,10 +31,13 @@ app.register_blueprint(rps)
 app.register_blueprint(hangman)
 app.register_blueprint(tictactoe)
 app.register_blueprint(memory)
+
+app.register_blueprint(rps_multiplayer)
 app.register_blueprint(ttt_multiplayer)
 
 
 if __name__ == "__main__":
-
     init_db()
+    socketio.start_background_task(cleanup_loop)
     socketio.run(app, debug=True, use_reloader=False)
+  
