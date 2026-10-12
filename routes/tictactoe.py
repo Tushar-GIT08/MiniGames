@@ -42,7 +42,7 @@ def tictactoe_mode():
     if "user_id" not in session:
         return redirect("/login")
 
-    return render_template("tictactoe.html", mode="selection")
+    return redirect("/tictactoe/1p")
 
 
 @tictactoe.route("/tictactoe/1p" , methods=["GET" , "POST"])
@@ -62,6 +62,13 @@ def tictactoe_game():
         record = get_game_record(user_id, "tictactoe")
 
     game = get_ttt_game(user_id)
+
+    if game is not None and request.method == "GET":
+        board = game[0]
+        finished = (check_winner(board, game[1]) or check_winner(board, game[2]) or "_" not in board)
+        if finished:
+            delete_ttt_game(user_id)
+            game = None
 
     if game is None:
 

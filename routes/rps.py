@@ -10,7 +10,7 @@ def rps_mode():
     if "user_id" not in session:
         return redirect("/login")
 
-    return render_template("rps.html", mode="selection")
+    return redirect("/rps/1p")
 
 @rps.route("/rps/1p", methods=["GET", "POST"])
 def play_rps():
