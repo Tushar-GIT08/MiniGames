@@ -1,17 +1,17 @@
 from flask import session, request
-from flask_socketio import join_room, emit, SocketIO
+from flask_socketio import join_room, emit
+from sockets.core import socketio, register_rooms, generate_room_code, REJOIN_GRACE_SECONDS, ROOM_TTL_SECONDS
 import random
 import string
 import time
 
 from database.db import update_record
 
-socketio = SocketIO()
-
 REJOIN_GRACE_SECONDS = 120
 ROOM_TTL_SECONDS = 1800
 
 game_states = {}
+register_rooms(game_states)
 
 def cleanup_rooms():
  
@@ -298,21 +298,4 @@ def handle_rematch_response(data):
                     "symbol": player["symbol"]},to=player["sid"])
 
         return
-
-@socketio.on("ttt_disconnect")
-def handle_disconnect():
-
-    for room in game_states:
-        current_room = game_states[room]
-
-        for player in current_room["players"]:
-
-            if player["sid"] == request.sid:
-
-                player["sid"] = None
-                player["connected"] = False
-                player["disconnected_at"] = time.time()
-
-                emit("opponent_disconnected",{"message": "Opponent disconnected"},to=room)
-                break
 

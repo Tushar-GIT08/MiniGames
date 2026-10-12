@@ -8,23 +8,9 @@
 
 <body class="ttt-page">
 
-    <a href="/games" class="ttt-home-button">
-        Back to Home Page
-    </a>
+<a href="{% if mode == '2p' %}/multiplayer{% else %}/games{% endif %}" class="ttt-home-button">Back to Home Page</a>
 
-        {% if mode == "selection" %}
-
-        <h1>TIC TAC TOE</h1>
-
-            <a href="/tictactoe/1p">
-                <button>1P VS COMPUTER</button>
-            </a>
-
-            <a href="/tictactoe/2p">
-                <button>2P WITH A FRIEND</button>
-            </a>
-        
-        {% elif mode == "1p" %}
+{% if mode == "1p" %}
 
             <h1>TIC TAC TOE</h1>
 
@@ -79,8 +65,6 @@
 
 <script src="{{ url_for('static', filename='js/tictactoe.js') }}"></script>
 
-            
-
 
         {% elif mode == "2p" %}
 
@@ -122,6 +106,7 @@
                 <div id="game-info">
                     <p id="my-symbol">You = ?</p>
                     <p id="opponent-symbol">Opponent = ?</p>
+                    <p id="message"></p>
                 </div>
 
 
@@ -142,7 +127,7 @@
             </div>
             
 
-            <div id="game-controls">
+<div id="game-controls">
 
     <button id="results">LIFETIME RESULTS</button>
 
@@ -163,8 +148,6 @@
         </div>
 
     </div>
-
-    <p id="message"></p>
 
     <button id="new-game">NEW GAME</button>
 
