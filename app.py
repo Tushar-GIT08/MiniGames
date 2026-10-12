@@ -16,7 +16,8 @@ from routes.rps_multiplayer import rps_multiplayer
 from routes.ttt_multiplayer import ttt_multiplayer
 
 from sockets import rps_socket
-from sockets.ttt_socket import socketio, cleanup_loop
+from sockets.core import socketio
+from sockets.ttt_socket import cleanup_loop
 
 load_dotenv()
 
