@@ -12,25 +12,11 @@
 
 <body class="rps-page">
 
-    <a href="/games">
-        <button>Back to home page</button>
-    </a>
+<a href="{% if mode == '2p' %}/multiplayer{% else %}/games{% endif %}" class="home-button">Back to home page</a>
 
-{% if mode == "selection" %}
+{% if mode == "1p" %}
 
-    <h1>Rock Paper Scissors</h1>
-
-    <a href="/rps/1p">
-        <button>1P VS COMPUTER</button>
-    </a>
-
-    <a href="/rps/2p">
-        <button>2P WITH A FRIEND</button>
-    </a>
-
-{% elif mode == "1p" %}
-
-    <h1>Rock Paper Scissors</h1>
+    <h2 class="prompt">Choose your move</h2>
 
     <div class="choices">
 
@@ -101,8 +87,6 @@
 
 {% elif mode == "2p" %}
 
-    <h1>Rock Paper Scissors</h1>
-
     <div id="room-menu">
 
         <h2>PLAY MULTIPLAYER</h2>
@@ -110,6 +94,11 @@
         <div class="room-buttons">
             <button id="create-room">CREATE ROOM</button>
             <button id="show-join-room">JOIN ROOM</button>
+        </div>
+
+        <div id="rejoin" style="display: none;">
+            <p id="previous-room"></p>
+            <button id="rejoin-game">CONTINUE GAME</button>
         </div>
 
         <div id="join-section">
@@ -127,15 +116,19 @@
 
     <div id="waiting">
 
+        <p>Share this code to join</p>
+        
         <p id="waiting-room-code"></p>
-
+        
         <p>Waiting for opponent...</p>
-
+   
     </div> 
 
     <div id="rps-game">
 
-    <h2>MAKE YOUR CHOICE</h2>
+        <p id="score">You 0 - 0 Opponent</p>
+
+    <h2 class="prompt">Choose your move</h2>
 
     <div class="choices">
 
@@ -155,9 +148,29 @@
 
     <p id="rps-result"></p>
 
+    <div class="result-section" id="round-result">
+
+        <div class="player-choice">
+            <h2>You</h2>
+            <img id="my-choice-image" class="player_image" src="">
+        </div>
+
+    <p id="round-outcome"></p>
+
+        <div class="computer-choice">
+            <h2>Opponent</h2>
+            <img id="opponent-choice-image" class="comp_image" src="">
+        </div>
+
+    </div>
+
+    
+
 </div>
 
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 <script src="{{ url_for('static', filename='js/rps_multiplayer.js') }}"></script>
+
 
 {% endif %}
 

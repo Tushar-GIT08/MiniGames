@@ -1,44 +1,30 @@
 from flask import session , request
 from flask_socketio import emit, join_room
+from sockets.core import socketio, register_rooms, generate_room_code, REJOIN_GRACE_SECONDS
 import random
 import string
 import time
 
 from database.db import get_game_record, create_record, update_record
 
-from sockets.ttt_socket import socketio
+from sockets.core import socketio, register_rooms
 
 rps_games = {}
-
-REJOIN_GRACE_SECONDS = 120
-ROOM_TTL_SECONDS = 1800
-
-def generate_room_code():
-
-    char = string.digits
-    code = ""
-
-    for i in range(4):
-        code += random.choice(char)
-
-    return code
+register_rooms(rps_games)
 
 
 @socketio.on("rps_create_room")
 def create_room():
 
-    while True:
-        room = generate_room_code()
-
-        if room not in rps_games:
-            break
+    room = generate_room_code()
         
     join_room(room)
 
     player = {"sid": request.sid, "user_id": session["user_id"], 
               "room": room, "connected": True, "disconnected_at": None}
 
-    rps_games[room] = {"players": [player], "choices": {}, "game_started": False}
+    rps_games[room] = {"players": [player], "choices": {}, "last_round": None,
+                        "score": {"player1": 0, "player2": 0}, "game_started": False}
 
     emit("rps_room_created", {"room":room})
 
@@ -55,34 +41,44 @@ def join_game(data):
     for player in rps_games[room]["players"]:
         if player["user_id"] == session["user_id"]:
 
-            if player["connected"]:
-                emit("rps_already_joined", {"message":"already joined"})
-                return
+            game = rps_games[room]
+
             
-            else: 
-                elapsed = time.time() - player["disconnected_at"]
+            if not game["game_started"]:
+                emit("rps_already_joined", {"message": "already joined"})
+                return
 
-                if elapsed < REJOIN_GRACE_SECONDS:
-                    
-                    player["sid"] = request.sid
-                    player["connected"] = True
-                    player["disconnected_at"] = None
-
-                    join_room(room)
-
-                    players = rps_games[room]["players"]
-
-                    for player_new in players:
-                        if player_new["sid"] != request.sid:
-                            emit("rps_opponent_reconnected",{"message": "Opponent reconnected"},
-                                to=player_new["sid"])
-                    
-                    emit("rps_valid_reconnect", {"message": "You reconnected"}, to=request.sid)
+            if not player["connected"]:
+                if time.time() - player["disconnected_at"] >= REJOIN_GRACE_SECONDS:
+                    emit("rps_expired", {"message": "grace period expired"})
                     return
-                
-                else:
-                    emit("rps_expired", {"message":"grace period expired"})
-                    return
+
+            was_notified = player.get("notified", False)
+
+            player["sid"] = request.sid
+            player["connected"] = True
+            player["disconnected_at"] = None
+            player["notified"] = False
+
+            join_room(room)
+
+            players = game["players"]
+
+            if was_notified:
+                for other in players:
+                    if other is not player and other["sid"]:
+                        emit("rps_opponent_reconnected", {"message": "Opponent reconnected"}, to=other["sid"])
+
+            role = "player1" if players[0] is player else "player2"
+
+            emit("rps_valid_reconnect", {
+                "player": role,
+                "my_choice": game["choices"].get(player["user_id"]),
+                "opponent_chose": any(uid != player["user_id"] for uid in game["choices"]),
+                "last_round": game["last_round"],
+                "score": game["score"]
+            }, to=request.sid)
+            return
             
 
     if len(rps_games[room]["players"]) >= 2:
@@ -127,18 +123,26 @@ def make_choice(data):
                 if not rps_games[room]["game_started"]:
                     return
 
-                if player["sid"] in rps_games[room]["choices"]:
+                if player["user_id"] in rps_games[room]["choices"]:
                     return
 
-                rps_games[room]["choices"][player["sid"]] = choice
+                rps_games[room]["choices"][player["user_id"]] = choice
+
+                choices = rps_games[room]["choices"]
+
+                players = rps_games[room]["players"]
+
+                if len(choices) == 1:
+                    rps_games[room]["last_round"] = None
+                    for abc in players:
+                        if abc["user_id"] not in choices and abc["sid"]:
+                            emit("rps_opponent_made_choice", {}, to=abc["sid"])
+
 
                 if len(rps_games[room]["choices"]) == 2:
-                    choices = rps_games[room]["choices"]
 
-                    player_sids = list(choices.keys())
-
-                    player1_choice = choices[player_sids[0]]
-                    player2_choice = choices[player_sids[1]]
+                    player1_choice = choices[players[0]["user_id"]]
+                    player2_choice = choices[players[1]["user_id"]]
 
                     if player1_choice == player2_choice:
                         result = "draw"
@@ -183,27 +187,24 @@ def make_choice(data):
                     update_record(player1["user_id"], "rps", player1_result)
                     update_record(player2["user_id"], "rps", player2_result)
 
-                    emit("rps_round_result", {"player1_choice": player1_choice,
-                                          "player2_choice": player2_choice,
-                                          "player1_result": player1_result,
-                                          "player2_result": player2_result}, to=room)
-                    
+                    if result == "player1":
+                        rps_games[room]["score"]["player1"] += 1
+                    elif result == "player2":
+                        rps_games[room]["score"]["player2"] += 1
+
+                    round_data = {"player1_choice": player1_choice,
+                                  "player2_choice": player2_choice,
+                                  "player1_result": player1_result,
+                                  "player2_result": player2_result,
+                                  "score": dict(rps_games[room]["score"])}
+
+                    rps_games[room]["last_round"] = round_data
+
+                    emit("rps_round_result", round_data, to=room)   
+
                     choices.clear()
 
-@socketio.on("disconnect")
-def disconnect():
 
-    for room in rps_games:
-        for player in rps_games[room]["players"]:
-
-            if player["sid"] == request.sid:
-
-                player["sid"] = None
-                player["connected"] = False
-                player["disconnected_at"] = time.time()
-                
-                emit("opponent_disconnected",{"message": "Opponent disconnected"},to=room)
-                break
 
 
 
