@@ -24,7 +24,8 @@ def create_room():
               "room": room, "connected": True, "disconnected_at": None}
 
     rps_games[room] = {"players": [player], "choices": {}, "last_round": None,
-                        "score": {"player1": 0, "player2": 0}, "game_started": False}
+                        "score": {"player1": 0, "player2": 0}, "game_started": False,
+                        "last_activity_at": time.time()}
 
     emit("rps_room_created", {"room":room})
 
@@ -37,6 +38,8 @@ def join_game(data):
     if room not in rps_games:
         emit("rps_room_not_found", {"message":"room does not exist"})
         return
+
+    rps_games[room]["last_activity_at"] = time.time()
 
     for player in rps_games[room]["players"]:
         if player["user_id"] == session["user_id"]:
@@ -119,6 +122,7 @@ def make_choice(data):
 
             if player["sid"] == request.sid:
                 room = player["room"]
+                rps_games[room]["last_activity_at"] = time.time()
 
                 if not rps_games[room]["game_started"]:
                     return

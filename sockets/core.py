@@ -10,7 +10,7 @@ all_rooms = []
 
 DISCONNECT_NOTICE = 7
 REJOIN_GRACE_SECONDS = 120   
-ROOM_TTL_SECONDS = 1800       
+ROOM_TTL_SECONDS = 1800      
 
 def register_rooms(rooms):
     all_rooms.append(rooms)
@@ -46,3 +46,24 @@ def handle_disconnect():
 
                     socketio.start_background_task(notify, room, player, player["disconnected_at"])
                     return
+
+def cleanup_rooms():
+    now = time.time()
+
+    for rooms in all_rooms:
+        stale = []
+
+        for code in rooms:
+            last_activity = rooms[code].get("last_activity_at", now)
+
+            if now - last_activity > ROOM_TTL_SECONDS:
+                stale.append(code)
+
+        for code in stale:
+            del rooms[code]
+
+
+def cleanup_loop():
+    while True:
+        socketio.sleep(30)
+        cleanup_rooms()

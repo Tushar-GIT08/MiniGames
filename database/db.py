@@ -1,8 +1,11 @@
+import os
 import sqlite3
 
-DB_PATH = "database/users.db"
+DB_PATH = os.environ.get("DB_PATH", "database/users.db")
 
 def init_db():
+    os.makedirs(os.path.dirname(DB_PATH) or ".", exist_ok=True)
+
     conn = sqlite3.connect(DB_PATH)
 
     cursor = conn.cursor()

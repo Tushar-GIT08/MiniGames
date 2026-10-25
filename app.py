@@ -14,10 +14,12 @@ from routes.memory import memory
 
 from routes.rps_multiplayer import rps_multiplayer
 from routes.ttt_multiplayer import ttt_multiplayer
+from routes.memory_multiplayer import memory_multiplayer
 
 from sockets import rps_socket
-from sockets.core import socketio
-from sockets.ttt_socket import cleanup_loop
+from sockets import memory_socket
+from sockets import ttt_socket
+from sockets.core import socketio, cleanup_loop
 
 load_dotenv()
 
@@ -35,10 +37,12 @@ app.register_blueprint(memory)
 
 app.register_blueprint(rps_multiplayer)
 app.register_blueprint(ttt_multiplayer)
+app.register_blueprint(memory_multiplayer)
 
+
+init_db()
+socketio.start_background_task(cleanup_loop)
 
 if __name__ == "__main__":
-    init_db()
-    socketio.start_background_task(cleanup_loop)
     socketio.run(app, debug=True, use_reloader=False)
   

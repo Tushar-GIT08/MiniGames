@@ -16,6 +16,9 @@ def signup():
         email = request.form.get("email")
         password = request.form.get("password")
 
+        if not username or not email or not password:
+            return render_template("signup.html", error="PLEASE FILL IN ALL FIELDS")
+
         existing_user = find_user(username, email)
 
         if existing_user:
@@ -40,6 +43,9 @@ def login():
 
         username = request.form.get("username")
         password = request.form.get("password")
+
+        if not username or not password:
+            return render_template("login.html", error="PLEASE FILL IN ALL FIELDS")
 
         user = find_user(username, username)
 

@@ -177,21 +177,26 @@ label { font-size: 14px; color: var(--muted); }
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 40px;
 }
 
 .game-card {
-    width: 280px;
+    width: 250px;
     color: var(--text);
     text-decoration: none;
 }
+
 .game-card img {
     width: 100%;
     height: auto;
     border-radius: var(--radius);
 }
-.game-card p { margin: 16px 0 0; font-size: 17px; font-weight: bold; }
 
+.game-card p {
+    margin: 12px 0 0;
+    font-size: 18px;
+    font-weight: bold;
+}
 
 /* =========================================================
    4. ROCK PAPER SCISSORS
@@ -414,4 +419,46 @@ img[src=""] { visibility: hidden; }
     font-size: 22px;
     font-weight: bold;
     letter-spacing: 1px;
+}
+
+/* Memory multiplayer */
+#memory-score {
+    margin: 0 0 10px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#memory-turn {
+    margin: 0 0 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+#memory-message {
+    min-height: 24px;
+    margin: 20px 0 0;
+    color: var(--muted);
+}
+
+.box.dimmed {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.memory-page .box button.matched {
+    border-color: var(--accent);
+}
+
+.coming-soon {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+#game-info #message {
+    display: inline-block;
+    padding: 8px 28px;
+    font-size: 26px;
+    border: 2px solid var(--border-strong);
+    border-radius: var(--radius);
 }

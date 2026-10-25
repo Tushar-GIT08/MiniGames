@@ -24,13 +24,22 @@ const tttButtons = document.querySelectorAll(".board button");
 
 let mySymbol = null;
 let room = null;
+let autoRejoin = false;
+
 const savedRoom = localStorage.getItem("tttRoom");
 
+const navEntry = performance.getEntriesByType("navigation")[0];
+const isReload = navEntry && navEntry.type === "reload";
+
 if (savedRoom) {
-    
-    rejoin.style.display = "block";
-    
-    previousRoom.textContent = "Previous Room: " + savedRoom;
+    if (isReload) {
+        autoRejoin = true;
+        room = savedRoom;
+        socket.emit("ttt_join_game", { room: savedRoom });
+    } else {
+        rejoin.style.display = "block";
+        previousRoom.textContent = "Previous Room: " + savedRoom;
+    }
 }
 
 function showSymbols() {
@@ -67,6 +76,8 @@ tttButtons.forEach(function (button) {
 });
 
 createRoom.addEventListener("click", function () {
+    localStorage.removeItem("tttRoom");
+    rejoin.style.display = "none";
     socket.emit("ttt_create_room");
 });
 
@@ -75,6 +86,8 @@ showJoinButton.addEventListener("click", function () {
 });
 
 joinButton.addEventListener("click", function () {
+    localStorage.removeItem("tttRoom");
+    rejoin.style.display = "none";
     roomMessage.textContent = "";
     room = roomCode.value;
     socket.emit("ttt_join_game", { room: room });
@@ -89,7 +102,6 @@ rejoinButton.addEventListener("click", function () {
 
 socket.on("room_created", function (data) {
     room = data.room;
-    localStorage.setItem("tttRoom", room);
     mySymbol = data.symbol;
 
     document.getElementById("waiting-room-code").textContent = room;
@@ -100,9 +112,19 @@ socket.on("room_created", function (data) {
 });
 
 socket.on("room_not_found", function (data) {
-    roomMessage.textContent = data.message;
     localStorage.removeItem("tttRoom");
     rejoin.style.display = "none";
+
+    if (autoRejoin) {
+        autoRejoin = false;
+        return;
+    }
+
+    roomMessage.textContent = data.message;
+});
+
+socket.on("already_joined", function (data) {
+    roomMessage.textContent = data.message;
 });
 
 socket.on("room_full", function (data) {
@@ -121,6 +143,7 @@ socket.on("player_assigned", function (data) {
 socket.on("game_started", function (data) {
     showGameScreen();
     showTurn(data.turn);
+    localStorage.setItem("tttRoom", room);
 });
 
 socket.on("board_update", function (data) {
@@ -129,6 +152,7 @@ socket.on("board_update", function (data) {
 });
 
 socket.on("game_state", function (data) {
+    autoRejoin = false;
     rejoin.style.display = "none";
     mySymbol = data.symbol;
     showSymbols();
@@ -140,6 +164,10 @@ socket.on("game_state", function (data) {
         board.classList.add("dimmed");
     } else {
         showTurn(data.turn);
+    }
+
+    if (data.rematch_pending) {
+        rematchPopup.style.display = "flex";
     }
 });
 
@@ -208,9 +236,15 @@ socket.on("opponent_reconnected", function () {
 });
 
 socket.on("rejoin_expired", function (data) {
-    roomMessage.textContent = data.message;
     localStorage.removeItem("tttRoom");
     rejoin.style.display = "none";
+
+    if (autoRejoin) {
+        autoRejoin = false;
+        return;
+    }
+
+    roomMessage.textContent = data.message;
 });
 
 //LIFETIME RESULTS
@@ -231,4 +265,8 @@ resultsButton.addEventListener("click", function () {
 
 document.getElementById("btg").addEventListener("click", function () {
     resultsPopup.style.display = "none";
+});
+
+document.querySelector(".ttt-home-button").addEventListener("click", function () {
+    localStorage.removeItem("tttRoom");
 });

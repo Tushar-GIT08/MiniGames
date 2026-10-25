@@ -1,48 +1,13 @@
 from flask import session, request
 from flask_socketio import join_room, emit
-from sockets.core import socketio, register_rooms, generate_room_code, REJOIN_GRACE_SECONDS, ROOM_TTL_SECONDS
+from sockets.core import socketio, register_rooms, generate_room_code, REJOIN_GRACE_SECONDS
 import random
-import string
 import time
 
 from database.db import update_record
 
-REJOIN_GRACE_SECONDS = 120
-ROOM_TTL_SECONDS = 1800
-
 game_states = {}
 register_rooms(game_states)
-
-def cleanup_rooms():
- 
-    current_time = time.time()
-
-    rooms_delete = []
-
-    for room in game_states:
-        last_activity = game_states[room]["last_activity_at"]
-
-        if current_time - last_activity > ROOM_TTL_SECONDS:
-            rooms_delete.append(room)
-
-    for room in rooms_delete:
-        del game_states[room]
-
-def cleanup_loop():
-    while True:
-        socketio.sleep(30)
-        cleanup_rooms()
-
-def generate_room_code():
-
-    characters = string.digits
-
-    code = ""
-
-    for i in range(4):
-        code += random.choice(characters)
-
-    return code
 
 def check_winner(board, symbol):
 
@@ -81,33 +46,42 @@ def handle_join_game(data):
     for player in game_states[room]["players"]:
         if player["user_id"] == user_id:
 
-            if player["connected"] == False:
+            current_room = game_states[room]
 
-                if time.time() - player.get("disconnected_at", 0) > REJOIN_GRACE_SECONDS:
+            if not current_room["game_started"]:
+                emit("already_joined", {"message": "already joined"})
+                return
+
+            if not player["connected"]:
+                if time.time() - player["disconnected_at"] >= REJOIN_GRACE_SECONDS:
                     emit("rejoin_expired", {"message": "Too much time passed, room is no longer joinable"})
                     return
 
-                player["sid"] = request.sid
-                player["connected"] = True
-                player["disconnected_at"] = None
+            was_notified = player.get("notified", False)
 
-                join_room(room)
+            player["sid"] = request.sid
+            player["connected"] = True
+            player["disconnected_at"] = None
+            player["notified"] = False
 
-                game_states[room]["last_activity_at"] = time.time()
+            join_room(room)
 
-                emit("player_reconnected", {"message": "You reconnected","symbol": player["symbol"]})
+            current_room["last_activity_at"] = time.time()
 
-                emit("game_state", {"board": game_states[room]["board"],
-                                    "turn": game_states[room]["turn"],
-                                    "game_started": game_states[room]["game_started"],
-                                    "game_over": game_states[room]["game_over"],
-                                    "symbol": player["symbol"]})
+            if was_notified:
+                for other in current_room["players"]:
+                    if other is not player and other["sid"]:
+                        emit("opponent_reconnected", {"message": "Opponent reconnected"}, to=other["sid"])
 
-                emit("opponent_reconnected", {"message": "Opponent reconnected"}, to=room, include_self=False)
+            emit("game_state", {"board": current_room["board"],
+                                "turn": current_room["turn"],
+                                "game_started": current_room["game_started"],
+                                "game_over": current_room["game_over"],
+                                "rematch_pending": (current_room["rematch_request"] is not None
+                                                and current_room["rematch_request"] != user_id),
+                                "symbol": player["symbol"]})
 
-                return
-
-            return 
+            return
 
     if len(game_states[room]["players"]) >= 2:
 
@@ -251,7 +225,7 @@ def handle_request_rematch(data):
     if current_room["rematch_request"] is not None:
         return
 
-    current_room["rematch_request"] = request.sid
+    current_room["rematch_request"] = session["user_id"]
 
     emit("rematch_requested", {"message": "Player wants to start a new game"}, to=room, include_self=False)
 
@@ -274,7 +248,7 @@ def handle_rematch_response(data):
 
     if response == "accept":
 
-        if request.sid == current_room["rematch_request"]:
+        if session["user_id"] == current_room["rematch_request"]:
             return
 
         current_room["board"] = "_________"

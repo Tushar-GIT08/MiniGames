@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Memory Game</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body class="memory-page">
+
+    <a href="/multiplayer" class="home-button">Back to home page</a>
+
+    <h1>Memory Game</h1>
+
+    <div id="room-menu">
+
+        <h2>PLAY MULTIPLAYER</h2>
+
+        <div class="room-buttons">
+            <button id="create-room">CREATE ROOM</button>
+            <button id="show-join-room">JOIN ROOM</button>
+        </div>
+
+        <div id="rejoin" style="display: none;">
+            <p id="previous-room"></p>
+            <button id="rejoin-game">CONTINUE GAME</button>
+        </div>
+
+        <div id="join-section">
+            <input type="text" id="room-code" placeholder="Enter room code" maxlength="4">
+            <button id="join">SUBMIT CODE</button>
+        </div>
+
+        <p id="room-message"></p>
+
+    </div>
+
+    <div id="waiting">
+        <p id="waiting-room-code"></p>
+        <p>Waiting for opponent...</p>
+    </div>
+
+    <div id="memory-game" style="display: none;">
+
+        <p id="memory-score">You 0 - 0 Opponent</p>
+        <p id="memory-turn"></p>
+
+        <div class="box">
+            <button data-position="0"></button>
+            <button data-position="1"></button>
+            <button data-position="2"></button>
+            <button data-position="3"></button>
+            <button data-position="4"></button>
+            <button data-position="5"></button>
+            <button data-position="6"></button>
+            <button data-position="7"></button>
+            <button data-position="8"></button>
+            <button data-position="9"></button>
+            <button data-position="10"></button>
+            <button data-position="11"></button>
+            <button data-position="12"></button>
+            <button data-position="13"></button>
+            <button data-position="14"></button>
+            <button data-position="15"></button>
+        </div>
+
+        <p id="memory-message"></p>
+
+        <button id="new-game">NEW GAME</button>
+
+    </div>
+
+    <div id="rematch-popup">
+        <div class="rematch-box">
+
+            <h2>REMATCH REQUEST</h2>
+
+            <p>Opponent wants to play again.</p>
+
+            <button id="accept-rematch">ACCEPT</button>
+            <button id="decline-rematch">DECLINE</button>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/memory_multiplayer.js') }}"></script>
+
+</body>
+
+</html>

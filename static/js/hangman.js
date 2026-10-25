@@ -20,13 +20,9 @@ form.addEventListener("submit", function(event) {
 
         method: "POST",
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: {"Content-Type": "application/json"},
 
-        body: JSON.stringify({
-            guess: guess
-        })
+        body: JSON.stringify({guess: guess})
 
     })
 
