@@ -1,0 +1,11 @@
+[project]
+name = "minigames"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "flask>=3.1.3",
+    "flask-socketio>=5.7.0",
+    "gunicorn>=26.2.0",
+    "python-dotenv>=1.2.4",
+    "simple-websocket>=1.1.0",
+]

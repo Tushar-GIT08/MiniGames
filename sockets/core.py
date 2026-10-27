@@ -4,7 +4,7 @@ import time
 import random
 import string
 
-socketio = SocketIO()
+socketio = SocketIO(async_mode="threading")
 
 all_rooms = []
 
