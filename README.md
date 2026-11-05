@@ -39,7 +39,7 @@ Choose either Docker or a local Python environment.
 
 ```bash
 git clone https://github.com/Tushar-GIT08/MiniGames
-cd Mini_games
+cd MiniGames
 ```
 
 ### 2. Configure environment variables
